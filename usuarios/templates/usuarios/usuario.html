@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>Panel de Usuario</title>
+</head>
+<body>
+    <h1>Panel de Usuario</h1>
+    <p><strong>ID Usuario:</strong> {{ usuario_id }}</p>
+    <p><strong>Rol:</strong> {{ rol }}</p>
+    <p><a href="{% url 'logout' %}">Cerrar sesión</a></p>
+</body>
+</html>
