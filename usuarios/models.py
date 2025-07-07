@@ -45,8 +45,23 @@ class Usuario(models.Model):
     id_cargo = models.ForeignKey(Cargo, on_delete=models.SET_NULL, null=True, db_column='id_cargo')
     id_rol = models.ForeignKey(Rol, on_delete=models.PROTECT, db_column='id_rol')
 
+    # Campos adicionales para tus datos
+    usuario_ad = models.CharField(max_length=50, blank=True, null=True)
+    usuario_office = models.CharField(max_length=50, blank=True, null=True)
+    usuario_sap = models.CharField(max_length=50, blank=True, null=True)
+    equipo = models.CharField(max_length=100, blank=True, null=True)
+    impresora = models.CharField(max_length=100, blank=True, null=True)
+    movil = models.CharField(max_length=50, blank=True, null=True)
+
     class Meta:
         db_table = 'Usuarios'
 
     def __str__(self):
         return f"{self.nombre} {self.apellido}"
+
+class RedSocial(models.Model):
+    nombre = models.CharField(max_length=50)
+    url = models.URLField()
+
+    def __str__(self):
+        return self.nombre

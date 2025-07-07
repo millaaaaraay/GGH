@@ -1,0 +1,320 @@
+{% load static %}
+{% url 'gestion_usuarios' as gestion_usuarios_url %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Panel Administrador</title>
+  <link rel="stylesheet" href="{% static 'usuarios/css/marsella.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+  /* Aquí va todo tu CSS actual (el mismo que ya tenías) */
+  .navbar {
+    background-image: url("{% static 'usuarios/img/image.png' %}");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 1rem 2rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+
+  .navbar-brand img {
+    filter: drop-shadow(0 0 2px rgba(0,0,0,0.4));
+  }
+  .nav-link {
+    color: #ecf0f1 !important;
+    font-weight: 600;
+    padding: 0.5rem 1rem !important;
+    transition: color 0.3s ease;
+  }
+  .nav-link:hover {
+    color: #ffd633 !important;
+  }
+  .nav-link i {
+    margin-right: 8px;
+  }
+  .navbar-toggler {
+    border-color: #ecf0f1;
+  }
+  .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 0.9)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+  }
+  .dropdown-menu {
+    width: 200px;
+    padding: 8px 0;
+    margin-top: 10px !important;
+    background-color: #6c757d !important;
+    border: 1px solid rgba(0,0,0,.15);
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+  .dropdown-item {
+    padding: 8px 20px;
+    color: white !important;
+    transition: background-color 0.3s ease;
+  }
+  .dropdown-item:hover {
+    background-color: #5a6268 !important;
+  }
+  .profile-modal .modal-content {
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    max-width: 600px;
+    margin: 0 auto;
+    background-image: url("{% static 'usuarios/img/image.png' %}");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+    overflow: hidden;
+  }
+  .profile-modal .modal-header,
+  .profile-modal .modal-footer {
+    background-image: url("{% static 'usuarios/img/image.png' %}");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+    z-index: 2;
+  }
+  .profile-modal .modal-header {
+    background-image: url("{% static 'usuarios/img/image.png' %}");
+    background-size: cover;
+    background-position: center;
+    color: white;
+    border-radius: 12px 12px 0 0;
+    padding: 1rem;
+    background-blend-mode: multiply;
+  }
+  .profile-modal .modal-body {
+    background: transparent;
+    border-radius: 12px;
+    position: relative;
+    z-index: 2;
+    padding: 1.5rem;
+  }
+  .profile-modal .modal-title {
+    font-weight: 600;
+    font-size: 1.2rem;
+  }
+  .profile-modal .info-group {
+    margin-bottom: 0.8rem;
+    padding: 0.8rem;
+    background-color: rgba(248,249,250,0.7);
+    border-radius: 6px;
+    transition: all 0.3s ease;
+  }
+  .profile-modal .info-group:hover {
+    background-color: rgba(233,236,239,0.7);
+    transform: translateX(3px);
+  }
+  .profile-modal .info-label {
+    color: #6c757d;
+    font-size: 0.8rem;
+    margin-bottom: 0.2rem;
+  }
+  .profile-modal .info-value {
+    color: #212529;
+    font-weight: 500;
+    font-size: 0.95rem;
+  }
+  .profile-modal .btn-close {
+    background-color: white;
+    opacity: 0.8;
+  }
+  .profile-modal .modal-footer {
+    background-image: url("{% static 'usuarios/img/image.png' %}");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-top: 1px solid #dee2e6;
+    padding: 1rem;
+  }
+  .profile-modal .btn-secondary {
+    background-color: transparent;
+    border: 1px solid white;
+    padding: 0.4rem 1.2rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    color: white;
+  }
+  .profile-modal .btn-secondary:hover {
+    background-color: rgba(255,255,255,0.2);
+    transform: translateY(-2px);
+  }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg" role="navigation">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="{% url 'login' %}">
+        <img src="{% static 'usuarios/img/logomarsella.png' %}" alt="Marsella Logo" height="50" />
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarMain">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="#" data-bs-toggle="modal" data-bs-target="#profileModal">
+              <i class="fas fa-user-circle me-2"></i> Perfil
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">
+              <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  {% block content %}
+  <div class="container mt-4">
+    <h3>Lista de Usuarios</h3>
+    <table class="table table-striped table-bordered">
+      <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>Nombre Completo</th>
+          <th>Correo Electrónico</th>
+          <th>Área</th>
+          <th>Cargo</th>
+          <th>Rol</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in usuarios %}
+          <tr>
+            <td>{{ u.id_usuario }}</td>
+            <td>{{ u.nombre }} {{ u.apellido }}</td>
+            <td>{{ u.correo }}</td>
+            <td>{{ u.id_area.nombre_area }}</td>
+            <td>{{ u.id_cargo.nombre_cargo }}</td>
+            <td>{{ u.id_rol.nombre_rol }}</td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="6" class="text-center">No hay usuarios registrados.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endblock %}
+
+  {% include 'usuarios/footer.html' %}
+
+  <!-- Modal Perfil Usuario -->
+  <div class="modal fade profile-modal" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="profileModalLabel">
+            <i class="fas fa-user-circle me-2"></i>Información del Perfil
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          {% if usuario %}
+            <div class="info-group">
+              <div class="info-label">Nombre Completo</div>
+              <div class="info-value">{{ usuario.nombre }} {{ usuario.apellido }}</div>
+            </div>
+            <div class="info-group">
+              <div class="info-label">Correo Electrónico</div>
+              <div class="info-value">{{ usuario.correo }}</div>
+            </div>
+            <div class="info-group">
+              <div class="info-label">Dirección</div>
+              <div class="info-value">{{ usuario.direccion }}</div>
+            </div>
+            <div class="info-group">
+              <div class="info-label">Teléfono</div>
+              <div class="info-value">{{ usuario.telefono }}</div>
+            </div>
+            <div class="info-group">
+              <div class="info-label">Área</div>
+              <div class="info-value">{{ usuario.id_area.nombre_area }}</div>
+            </div>
+            <div class="info-group">
+              <div class="info-label">Cargo</div>
+              <div class="info-value">{{ usuario.id_cargo.nombre_cargo }}</div>
+            </div>
+            <div class="info-group">
+              <div class="info-label">Rol</div>
+              <div class="info-value">{{ usuario.id_rol.nombre_rol }}</div>
+            </div>
+          {% else %}
+            <div class="alert alert-info">
+              <i class="fas fa-info-circle me-2"></i>No hay información de usuario disponible.
+            </div>
+          {% endif %}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fas fa-times me-2"></i>Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Confirmar Cerrar Sesión -->
+  <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="logoutModalLabel">Confirmar Cierre de Sesión</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          ¿Está seguro que desea cerrar la sesión?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" onclick="logout()">Confirmar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Spinner Cargando -->
+  <div class="modal fade" id="loadingModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body text-center p-4">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+          </div>
+          <p class="mt-3">Cerrando sesión...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    function logout() {
+      var logoutModal = bootstrap.Modal.getInstance(document.getElementById('logoutModal'));
+      var loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+
+      logoutModal.hide();
+      loadingModal.show();
+
+      setTimeout(function() {
+        window.location.href = "{% url 'login' %}";
+      }, 1000);
+    }
+  </script>
+
+</body>
+</html>

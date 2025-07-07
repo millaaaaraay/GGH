@@ -53,6 +53,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',  # Necesario para admin y mensajes
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                 'usuarios.context_processors.redes_sociales',
+
             ],
         },
     },
@@ -86,7 +88,11 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Carpeta(s) adicionales para archivos estáticos (en desarrollo, para que Django los encuentre)
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',
+    BASE_DIR / 'usuarios' / 'static',
 ]
 
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+

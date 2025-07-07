@@ -8,32 +8,28 @@
 </head>
 <body>
     <div class="login-wrapper">
-        <img src="{% static 'usuarios/img/marsella.png' %}" alt="Logo Marsella" class="logo-main">
+        <img src="{% static 'usuarios/img/ggh.png' %}" alt="Logo GGH" class="logo-sub">
 
-        <div class="login-container">
-            <img src="{% static 'usuarios/img/ggh.png' %}" alt="Logo GGH" class="logo-sub">
-
-            <h2>Iniciar sesión</h2>
+        <h2>Iniciar sesión</h2>
+        
+        <form method="post" action="{% url 'login' %}">
+            {% csrf_token %}
+            {{ form.correo.label_tag }}
+            {{ form.correo }}
             
-            <form method="post" action="{% url 'login' %}">
-                {% csrf_token %}
-                {{ form.correo.label_tag }}
-                {{ form.correo }}
-                
-                {{ form.contraseña.label_tag }}
-                {{ form.contraseña }}
-                
-                <button type="submit">Entrar</button>
-            </form>
+            {{ form.contraseña.label_tag }}
+            {{ form.contraseña }}
+            
+            <button type="submit">Entrar</button>
+        </form>
 
-            {% if messages %}
-            <ul class="error-messages">
-                {% for message in messages %}
-                <li>{{ message }}</li>
-                {% endfor %}
-            </ul>
-            {% endif %}
-        </div>
+        {% if messages %}
+        <ul class="error-messages">
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
     </div>
 </body>
 </html>
