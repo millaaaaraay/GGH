@@ -4,6 +4,10 @@ from django.http import HttpResponse
 from django.contrib.auth import logout as auth_logout
 from .forms import LoginForm, UsuarioForm
 from .models import Usuario, RedSocial
+# views.py (inicio)
+
+from .models import Usuario, UsuarioAd, RedSocial
+
 
 def login_view(request):
     if request.method == 'POST':
@@ -144,14 +148,47 @@ def editar_usuario_view(request, id_usuario):
     
     return render(request, 'usuarios/editar_usuario.html', {'form': form, 'usuario': usuario})
 
-def usuarios_ad_view(request):
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.http import HttpResponse
+from .forms import UsuarioForm
+from .models import Usuario
+
+def agregar_usuario_ad_view(request):
     rol = request.session.get('rol', '').lower()
     if rol != 'administrador':
         return HttpResponse('No autorizado', status=403)
 
-    usuarios = Usuario.objects.all()
+    if request.method == 'POST':
+        form = UsuarioForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('usuarios_ad')
+    else:
+        form = UsuarioForm()
 
-    context = {
-        'usuarios': usuarios,
-    }
-    return render(request, 'usuarios/usuarios_ad.html', context)
+    return render(request, 'agregar_usuario_ad.html', {'form': form})
+
+
+def editar_usuario_ad_view(request, id_usuario_ad):
+    rol = request.session.get('rol', '').lower()
+    if rol != 'administrador':
+        return HttpResponse('No autorizado', status=403)
+
+    usuario = get_object_or_404(Usuario, id_usuario=id_usuario_ad)
+
+    if request.method == 'POST':
+        form = UsuarioForm(request.POST, instance=usuario)
+        if form.is_valid():
+            form.save()
+            return redirect('usuarios_ad')
+    else:
+        form = UsuarioForm(instance=usuario)
+
+    return render(request, 'editar_usuario_ad.html', {'form': form, 'usuario': usuario})
+
+
+def usuarios_ad_view(request):
+    usuarios = Usuario.objects.select_related('datos_ad', 'id_area').all()
+    return render(request, 'usuarios/usuarios_ad.html', {'usuarios': usuarios})

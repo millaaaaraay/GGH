@@ -11,6 +11,10 @@ urlpatterns = [
     path('usuarios/agregar/', views.agregar_usuario_view, name='agregar_usuario'),
     path('usuarios/editar/<int:id_usuario>/', views.editar_usuario_view, name='editar_usuario'),
 
-    # Aquí agregamos la ruta para usuarios_ad
+    # Rutas para usuarios_ad
     path('usuarios/ad/', views.usuarios_ad_view, name='usuarios_ad'),
+    path('usuarios/ad/agregar/', views.agregar_usuario_ad_view, name='agregar_usuario_ad'),
+    path('usuarios/ad/editar/<int:id_usuario_ad>/', views.editar_usuario_ad_view, name='editar_usuario_ad'),
+    path('usuarios/ad/agregar/', views.agregar_usuario_ad_view, name='agregar_usuario_ad'),
+
 ]

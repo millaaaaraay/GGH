@@ -45,7 +45,14 @@ class Usuario(models.Model):
     id_cargo = models.ForeignKey(Cargo, on_delete=models.SET_NULL, null=True, db_column='id_cargo')
     id_rol = models.ForeignKey(Rol, on_delete=models.PROTECT, db_column='id_rol')
 
-    # Campos adicionales para tus datos
+    class Meta:
+        db_table = 'Usuarios'
+
+    def __str__(self):
+        return f"{self.nombre} {self.apellido}"
+
+class UsuarioAd(models.Model):
+    usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE, related_name='datos_ad')
     usuario_ad = models.CharField(max_length=50, blank=True, null=True)
     usuario_office = models.CharField(max_length=50, blank=True, null=True)
     usuario_sap = models.CharField(max_length=50, blank=True, null=True)
@@ -54,10 +61,10 @@ class Usuario(models.Model):
     movil = models.CharField(max_length=50, blank=True, null=True)
 
     class Meta:
-        db_table = 'Usuarios'
+        db_table = 'Usuarios_Ad'
 
     def __str__(self):
-        return f"{self.nombre} {self.apellido}"
+        return f"Datos AD de {self.usuario.nombre} {self.usuario.apellido}"
 
 class RedSocial(models.Model):
     nombre = models.CharField(max_length=50)
@@ -65,3 +72,5 @@ class RedSocial(models.Model):
 
     def __str__(self):
         return self.nombre
+
+
