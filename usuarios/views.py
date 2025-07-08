@@ -4,6 +4,8 @@ from django.http import HttpResponse
 from django.contrib.auth import logout as auth_logout
 from .forms import LoginForm, UsuarioForm
 from .models import Usuario, RedSocial
+from .models import Usuario, Area, Cargo, Rol
+
 # views.py (inicio)
 
 from .models import Usuario, UsuarioAd, RedSocial
@@ -99,20 +101,38 @@ def gestion_usuarios_view(request):
     if rol != 'administrador':
         return HttpResponse('No autorizado', status=403)
     
-    usuario = None
+    usuario_actual = None
     usuario_id = request.session.get('usuario_id')
     if usuario_id:
         try:
-            usuario = Usuario.objects.get(id_usuario=usuario_id)
+            usuario_actual = Usuario.objects.get(id_usuario=usuario_id)
         except Usuario.DoesNotExist:
-            usuario = None
+            usuario_actual = None
+
+    if request.method == 'POST':
+        form = UsuarioForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Usuario creado correctamente.')
+            return redirect('gestion_usuarios')
+        else:
+            messages.error(request, 'Por favor, corrige los errores en el formulario.')
+    else:
+        form = UsuarioForm()
 
     usuarios = Usuario.objects.all()
-    
+    areas = Area.objects.all()
+    cargos = Cargo.objects.all()
+    roles = Rol.objects.all()
+
     context = {
         'rol': rol,
-        'usuario': usuario,
+        'usuario': usuario_actual,
         'usuarios': usuarios,
+        'form': form,
+        'areas': areas,
+        'cargos': cargos,
+        'roles': roles,
     }
     return render(request, 'usuarios/gestion_usuarios.html', context)
 
