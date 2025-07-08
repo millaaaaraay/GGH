@@ -1,41 +1,103 @@
 {% load static %}
-<link rel="stylesheet" href="{% static 'css/marsella.css' %}">
-<!-- FontAwesome para iconos -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<style>
+  .site-footer {
+    background-image: url('{% static "img/image.png" %}');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: #fff;
+    padding: 40px 0 0 0;
+    width: 100%;
+    position: relative;
+  }
+  .site-footer__content {
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 30px;
+    border-radius: 0;
+    width: 100%;
+  }
+  .site-footer__column {
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .site-footer__column h4 {
+    color: #fff;
+    font-weight: bold;
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #ffd700;
+  }
+  .site-footer__social-title {
+    color: #fff;
+    font-weight: bold;
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #ffd700;
+  }
+  .site-footer__social-icons a {
+    color: #fff;
+    font-size: 22px;
+    margin-right: 25px;
+    transition: all 0.3s ease;
+    display: inline-block;
+    padding: 10px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  .site-footer__social-icons a:hover {
+    color: #ffd700;
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-3px);
+  }
+  .site-footer__bottom {
+    background-color: rgba(0, 0, 0, 0.9);
+    padding: 20px 0;
+    width: 100%;
+    margin-top: 20px;
+  }
+  .site-footer p {
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+</style>
+<footer class="site-footer w-100" role="contentinfo" aria-label="Pie de página">
+  <div class="site-footer__content container-fluid">
+    <div class="row justify-content-around">
+      <!-- Redes Sociales -->
+      <div class="site-footer__column col-md-4">
+        <p class="site-footer__social-title">Redes sociales</p>
+        <nav class="site-footer__social-icons" aria-label="Redes sociales">
+          {% for red in redes %}
+            <a href="{{ red.url }}" target="_blank" rel="noopener noreferrer" title="{{ red.nombre }}">
+              {% if red.nombre|lower == 'facebook' %}
+                <i class="fab fa-facebook-f"></i>
+              {% elif red.nombre|lower == 'instagram' %}
+                <i class="fab fa-instagram"></i>
+              {% else %}
+                <i class="fas fa-link"></i>
+              {% endif %}
+            </a>
+          {% empty %}
+            <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+          {% endfor %}
+        </nav>
+      </div>
 
-<footer class="footer" role="contentinfo">
-  <div class="footer-content">
-    <div class="footer-column logo-col">
-      <p class="footer-rrss-title" style="font-family: 'Montserrat', sans-serif;">Redes sociales</p>
-      <nav class="social-icons" aria-label="Redes sociales">
-        {% for red in redes %}
-          <a href="{{ red.url }}" target="_blank" rel="noopener noreferrer" title="{{ red.nombre }}">
-            {% if red.nombre|lower == 'facebook' %}
-              <i class="fab fa-facebook-f"></i>
-            {% elif red.nombre|lower == 'instagram' %}
-              <i class="fab fa-instagram"></i>
-            {% else %}
-              <i class="fas fa-link"></i>
-            {% endif %}
-          </a>
-        {% empty %}
-          <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
-          <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
-        {% endfor %}
-      </nav>
+      <!-- Contacto -->
+      <div class="site-footer__column col-md-4">
+        <h4>CONTACTO</h4>
+        <p><i class="fas fa-map-marker-alt mr-2"></i> Casa central: Av. España #2501, Batuco, Lampa. Santiago, Chile.</p>
+        <p><i class="fas fa-building mr-2"></i> Antofagasta: El Quisco #678</p>
+        <p><i class="fas fa-envelope mr-2"></i> Correo: contacto@ggh.cl</p>
+        <p><i class="fab fa-whatsapp mr-2"></i> Whatsapp: +569 5216 7864</p>
+        <p><i class="fas fa-flag mr-2"></i> Chile</p>
+      </div>
     </div>
-
-    <div class="footer-column">
-      <h4>CONTACTO</h4>
-      <p>Casa central: Av. España #2501, Batuco, Lampa. Santiago, Chile.</p>
-      <p>Antofagasta: El Quisco #678</p>
-      <p>Correo: contacto@ggh.cl</p>
-      <p>Whatsapp: +569 5216 7864</p>
-      <p>Chile</p>
-    </div>
-  </div> <!-- Cierre footer-content -->
-
-  <div class="footer-bottom">
-    <p>Todos los derechos reservados GGH, <em>Una empresa de Grupo Gomez Hermanos</em>, Ferretería Marsella 2025. Developed By <strong>CETRIK</strong></p>
   </div>
+
+
 </footer>
