@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    /* Navbar y otros estilos */
+    /* Navbar y otros estilos previos */
     .navbar {
       background-image: url("{% static 'usuarios/img/image.png' %}");
       background-size: cover;
@@ -30,45 +30,38 @@
     .nav-link:hover {
       color: #ffd633 !important;
     }
-
-    /* Contenedor principal */
-    .container-main {
-      max-width: 900px;
-      margin: 3rem auto 5rem auto;
-      padding: 2rem;
-      background-image: url("{% static 'usuarios/img/image.png' %}");
-      background-size: cover;
-      background-position: center;
-      border-radius: 15px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-      position: relative;
-      overflow: hidden;
+    .nav-link i {
+      margin-right: 8px;
     }
-    .container-main::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background-color: rgba(255,255,255,0.95);
-      border-radius: 15px;
-      z-index: 0;
+    .navbar-toggler {
+      border-color: #ecf0f1;
     }
-    .container-main > * {
-      position: relative;
-      z-index: 1;
+    .navbar-toggler-icon {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 0.9)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
     }
 
-    /* Tarjetas y cabecera pestañas */
+    /* Pestañas mejoradas */
     .nav-tabs .nav-link {
-      font-weight: 600;
+      font-weight: 700;
       color: #343a40;
       border-radius: 10px 10px 0 0;
+      background-color: #f8f9fa;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    .nav-tabs .nav-link:hover {
+      background-color: #ffd633;
+      color: #212529;
+      box-shadow: 0 5px 12px rgba(255,214,51,0.7);
     }
     .nav-tabs .nav-link.active {
-      color: #ffd633;
+      color: #fff;
       background-color: #343a40;
+      box-shadow: 0 6px 20px rgba(52,58,64,0.8);
       border-color: #343a40 #343a40 #fff;
     }
 
+    /* Contenido pestañas */
     .tab-content {
       border: 1px solid #343a40;
       border-top: none;
@@ -76,18 +69,33 @@
       border-radius: 0 0 15px 15px;
       background-color: white;
       box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      max-width: 720px;
+      margin: 2rem auto 4rem auto;
     }
-    /* Botón primario */
-    .btn-primary {
-      background-color: #007bff;
-      border: none;
-      font-weight: 600;
-      box-shadow: 0 3px 8px rgba(0,123,255,0.5);
-      transition: background-color 0.3s ease;
+
+    /* Contenedor con imagen para el formulario Crear Usuario */
+    .form-background-container {
+      background-image: url("{% static 'usuarios/img/image.png' %}");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      border-radius: 15px;
+      padding: 2rem;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+      position: relative;
+      margin-bottom: 1rem;
     }
-    .btn-primary:hover {
-      background-color: #0056b3;
-      box-shadow: 0 5px 12px rgba(0,86,179,0.7);
+    .form-background-overlay {
+      position: absolute;
+      inset: 0;
+      background-color: rgba(255, 255, 255, 0.93);
+      border-radius: 15px;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .form-content {
+      position: relative;
+      z-index: 2;
     }
   </style>
 </head>
@@ -99,9 +107,11 @@
       <a class="navbar-brand" href="{% url 'login' %}">
         <img src="{% static 'usuarios/img/logomarsella.png' %}" alt="Marsella Logo" height="50" />
       </a>
+
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
+
       <div class="collapse navbar-collapse" id="navbarMain">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
@@ -120,9 +130,9 @@
   </nav>
 
   {% block content %}
-  <div class="container-main">
+  <div class="container">
     <!-- Pestañas -->
-    <ul class="nav nav-tabs mb-4" id="usuarioTabs" role="tablist">
+    <ul class="nav nav-tabs justify-content-center mt-4" id="tabUsuarios" role="tablist">
       <li class="nav-item" role="presentation">
         <button class="nav-link active" id="crear-tab" data-bs-toggle="tab" data-bs-target="#crear" type="button" role="tab" aria-controls="crear" aria-selected="true">
           <i class="fas fa-user-plus me-1"></i> Crear Usuario
@@ -136,86 +146,134 @@
     </ul>
 
     <!-- Contenido pestañas -->
-    <div class="tab-content" id="usuarioTabsContent">
+    <div class="tab-content" id="tabUsuariosContent">
 
-      <!-- Crear Usuario -->
+      <!-- Pestaña Crear Usuario -->
       <div class="tab-pane fade show active" id="crear" role="tabpanel" aria-labelledby="crear-tab">
-        <form method="post" action="{% url 'crear_usuario' %}">
-          {% csrf_token %}
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label for="nombre" class="form-label fw-semibold">Nombre</label>
-              <input type="text" name="nombre" id="nombre" class="form-control" placeholder="Ingrese nombre" required>
-            </div>
-            <div class="col-md-6">
-              <label for="apellido" class="form-label fw-semibold">Apellido</label>
-              <input type="text" name="apellido" id="apellido" class="form-control" placeholder="Ingrese apellido" required>
-            </div>
-            <div class="col-md-6">
-              <label for="correo" class="form-label fw-semibold">Correo electrónico</label>
-              <input type="email" name="correo" id="correo" class="form-control" placeholder="ejemplo@correo.com" required>
-            </div>
-            <div class="col-md-6">
-              <label for="contraseña" class="form-label fw-semibold">Contraseña</label>
-              <input type="password" name="contraseña" id="contraseña" class="form-control" placeholder="Ingrese contraseña" required>
-            </div>
-            <div class="col-md-6">
-              <label for="direccion" class="form-label fw-semibold">Dirección</label>
-              <input type="text" name="direccion" id="direccion" class="form-control" placeholder="Ingrese dirección">
-            </div>
-            <div class="col-md-6">
-              <label for="telefono" class="form-label fw-semibold">Teléfono</label>
-              <input type="tel" name="telefono" id="telefono" class="form-control" placeholder="+56 9 1234 5678">
-            </div>
-            <div class="col-md-4">
-              <label for="id_area" class="form-label fw-semibold">Área</label>
-              <select name="id_area" id="id_area" class="form-select" required>
-                <option value="" selected disabled>Seleccione Área</option>
-                {% for area in areas %}
-                  <option value="{{ area.id_area }}">{{ area.nombre_area }}</option>
-                {% endfor %}
-              </select>
-            </div>
-            <div class="col-md-4">
-              <label for="id_cargo" class="form-label fw-semibold">Cargo</label>
-              <select name="id_cargo" id="id_cargo" class="form-select" required>
-                <option value="" selected disabled>Seleccione Cargo</option>
-                {% for cargo in cargos %}
-                  <option value="{{ cargo.id_cargo }}">{{ cargo.nombre_cargo }}</option>
-                {% endfor %}
-              </select>
-            </div>
-            <div class="col-md-4">
-              <label for="id_rol" class="form-label fw-semibold">Rol</label>
-              <select name="id_rol" id="id_rol" class="form-select" required>
-                <option value="" selected disabled>Seleccione Rol</option>
-                {% for rol in roles %}
-                  <option value="{{ rol.id_rol }}">{{ rol.nombre_rol }}</option>
-                {% endfor %}
-              </select>
-            </div>
+        <div class="form-background-container">
+          <div class="form-background-overlay"></div>
+          <div class="form-content">
+            <h3 class="mb-4 text-center">Crear nuevo usuario</h3>
+            <form method="post" action="{% url 'gestion_usuarios' %}">
+
+              {% csrf_token %}
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label for="nombre" class="form-label fw-semibold">Nombre</label>
+                  <input type="text" name="nombre" id="nombre" class="form-control" placeholder="Ingrese nombre" required>
+                </div>
+                <div class="col-md-6">
+                  <label for="apellido" class="form-label fw-semibold">Apellido</label>
+                  <input type="text" name="apellido" id="apellido" class="form-control" placeholder="Ingrese apellido" required>
+                </div>
+                <div class="col-md-6">
+                  <label for="correo" class="form-label fw-semibold">Correo electrónico</label>
+                  <input type="email" name="correo" id="correo" class="form-control" placeholder="ejemplo@correo.com" required>
+                </div>
+                <div class="col-md-6">
+                  <label for="contraseña" class="form-label fw-semibold">Contraseña</label>
+                  <input type="password" name="contraseña" id="contraseña" class="form-control" placeholder="Ingrese contraseña" required>
+                </div>
+                <div class="col-md-6">
+                  <label for="direccion" class="form-label fw-semibold">Dirección</label>
+                  <input type="text" name="direccion" id="direccion" class="form-control" placeholder="Ingrese dirección">
+                </div>
+                <div class="col-md-6">
+                  <label for="telefono" class="form-label fw-semibold">Teléfono</label>
+                  <input type="tel" name="telefono" id="telefono" class="form-control" placeholder="+56 9 1234 5678">
+                </div>
+                <div class="col-md-4">
+                  <label for="id_area" class="form-label fw-semibold">Área</label>
+                  <select name="id_area" id="id_area" class="form-select" required>
+                    <option value="" selected disabled>Seleccione Área</option>
+                    {% for area in areas %}
+                      <option value="{{ area.id_area }}">{{ area.nombre_area }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <label for="id_cargo" class="form-label fw-semibold">Cargo</label>
+                  <select name="id_cargo" id="id_cargo" class="form-select" required>
+                    <option value="" selected disabled>Seleccione Cargo</option>
+                    {% for cargo in cargos %}
+                      <option value="{{ cargo.id_cargo }}">{{ cargo.nombre_cargo }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <label for="id_rol" class="form-label fw-semibold">Rol</label>
+                  <select name="id_rol" id="id_rol" class="form-select" required>
+                    <option value="" selected disabled>Seleccione Rol</option>
+                    {% for rol in roles %}
+                      <option value="{{ rol.id_rol }}">{{ rol.nombre_rol }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="mt-4 d-flex justify-content-center">
+                <button type="submit" class="btn btn-primary px-5 py-2 fw-semibold shadow-sm">
+                  <i class="fas fa-user-plus me-2"></i>Crear Usuario
+                </button>
+              </div>
+            </form>
           </div>
-          <div class="mt-4 d-flex justify-content-center">
-            <button type="submit" class="btn btn-primary px-5 py-2 fw-semibold shadow-sm">
-              <i class="fas fa-user-plus me-2"></i> Crear Usuario
+        </div>
+      </div>
+
+      <!-- Pestaña Buscar Usuario -->
+      <div class="tab-pane fade" id="buscar" role="tabpanel" aria-labelledby="buscar-tab">
+        <h3 class="mb-4 text-center">Buscar usuario</h3>
+        <form method="get" action="{% url 'gestion_usuarios' %}" class="d-flex gap-2 align-items-center flex-wrap mb-4">
+          <div class="flex-grow-1">
+            <label for="nombre_buscar" class="form-label fw-semibold">Nombre o Apellido</label>
+            <input
+              type="text"
+              name="nombre"
+              id="nombre_buscar"
+              class="form-control"
+              placeholder="Ingrese nombre o apellido"
+              value="{{ request.GET.nombre }}"
+              autocomplete="off"
+            >
+          </div>
+          <div class="mt-4 mt-md-0">
+            <button type="submit" class="btn btn-primary px-4">
+              <i class="fas fa-search me-2"></i> Buscar
             </button>
           </div>
         </form>
-      </div>
 
-      <!-- Buscar Usuario -->
-      <div class="tab-pane fade" id="buscar" role="tabpanel" aria-labelledby="buscar-tab">
-        <form method="get" action="{% url 'gestion_usuarios' %}">
-          <div class="mb-3">
-            <label for="nombre_buscar" class="form-label fw-semibold">Buscar por nombre completo</label>
-            <input type="text" name="nombre" id="nombre_buscar" class="form-control" placeholder="Ingrese nombre o apellido" value="{{ request.GET.nombre }}">
-          </div>
-          <button type="submit" class="btn btn-primary">
-            <i class="fas fa-search me-2"></i> Buscar
-          </button>
-        </form>
+        {% if request.GET.nombre %}
+          {% if usuarios %}
+            <table class="table table-striped table-bordered">
+              <thead class="table-dark">
+                <tr>
+                  <!-- ID y Área ocultos para búsqueda -->
+                  <th>Nombre Completo</th>
+                  <th>Correo Electrónico</th>
+                  <th>Cargo</th>
+                  <th>Rol</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for u in usuarios %}
+                  <tr>
+                    <td>{{ u.nombre }} {{ u.apellido }}</td>
+                    <td>{{ u.correo }}</td>
+                    <td>{{ u.id_cargo.nombre_cargo }}</td>
+                    <td>{{ u.id_rol.nombre_rol }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            <div class="alert alert-warning text-center">No se encontraron usuarios con ese nombre.</div>
+          {% endif %}
+        {% else %}
+          <!-- No mostrar tabla ni mensajes si no hay búsqueda -->
+          <div class="text-center text-muted fst-italic">Use el formulario para buscar usuarios por nombre o apellido.</div>
+        {% endif %}
       </div>
-
     </div>
   </div>
   {% endblock %}

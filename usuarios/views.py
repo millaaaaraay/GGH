@@ -5,6 +5,8 @@ from django.contrib.auth import logout as auth_logout
 from .forms import LoginForm, UsuarioForm
 from .models import Usuario, RedSocial
 from .models import Usuario, Area, Cargo, Rol
+from django.db.models import Q
+
 
 # views.py (inicio)
 
@@ -96,6 +98,8 @@ def redes_sociales(request):
         'redes': RedSocial.objects.all()
     }
 
+
+
 def gestion_usuarios_view(request):
     rol = request.session.get('rol', '').lower()
     if rol != 'administrador':
@@ -120,7 +124,15 @@ def gestion_usuarios_view(request):
     else:
         form = UsuarioForm()
 
+    # Obtener valor del parámetro GET para búsqueda
+    nombre_buscar = request.GET.get('nombre', '').strip()
+
     usuarios = Usuario.objects.all()
+    if nombre_buscar:
+        usuarios = usuarios.filter(
+            Q(nombre__icontains=nombre_buscar) | Q(apellido__icontains=nombre_buscar)
+        )
+
     areas = Area.objects.all()
     cargos = Cargo.objects.all()
     roles = Rol.objects.all()
@@ -133,23 +145,13 @@ def gestion_usuarios_view(request):
         'areas': areas,
         'cargos': cargos,
         'roles': roles,
+        'nombre_buscar': nombre_buscar,  # para mantener valor en formulario
     }
     return render(request, 'usuarios/gestion_usuarios.html', context)
 
-def agregar_usuario_view(request):
-    rol = request.session.get('rol', '').lower()
-    if rol != 'administrador':
-        return HttpResponse('No autorizado', status=403)
-    
-    if request.method == 'POST':
-        form = UsuarioForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('gestion_usuarios')
-    else:
-        form = UsuarioForm()
-    
-    return render(request, 'usuarios/agregar_usuario.html', {'form': form})
+
+
+
 
 def editar_usuario_view(request, id_usuario):
     rol = request.session.get('rol', '').lower()

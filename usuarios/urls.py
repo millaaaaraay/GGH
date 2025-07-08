@@ -8,14 +8,7 @@ urlpatterns = [
     path('usuario/', views.panel_usuario, name='panel_usuario'),
     path('usuario-perfil/', views.usuario_view, name='usuario'),
     path('gestion-usuarios/', views.gestion_usuarios_view, name='gestion_usuarios'),
-    path('usuarios/agregar/', views.agregar_usuario_view, name='agregar_usuario'),
-    path('usuarios/editar/<int:id_usuario>/', views.editar_usuario_view, name='editar_usuario'),
-
-    # Rutas para usuarios_ad
-    path('usuarios/ad/', views.usuarios_ad_view, name='usuarios_ad'),
-    path('usuarios/ad/agregar/', views.agregar_usuario_ad_view, name='agregar_usuario_ad'),
-    path('usuarios/ad/editar/<int:id_usuario_ad>/', views.editar_usuario_ad_view, name='editar_usuario_ad'),
-    path('usuarios/ad/agregar/', views.agregar_usuario_ad_view, name='agregar_usuario_ad'),
-    path('usuarios/crear/', views.agregar_usuario_view, name='crear_usuario'),
-
+    
+    # Agrega esta ruta para Usuarios AD
+    path('usuarios-ad/', views.usuarios_ad_view, name='usuarios_ad'),
 ]
