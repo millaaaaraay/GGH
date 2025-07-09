@@ -62,25 +62,40 @@ def panel_admin(request):
     }
     return render(request, 'usuarios/administrador.html', context)
 
+from django.shortcuts import render
+from django.http import HttpResponse
+from .models import Usuario
+
+from django.urls import reverse
+
 def panel_usuario(request):
     usuario_id = request.session.get('usuario_id')
     rol = request.session.get('rol', '').lower()
+
+    # Validar rol y sesión
     if rol != 'usuario' or not usuario_id:
         return HttpResponse('No autorizado', status=403)
-    
+
     usuario = None
-    if usuario_id:
-        try:
-            usuario = Usuario.objects.get(id_usuario=usuario_id)
-        except Usuario.DoesNotExist:
-            usuario = None
-    
+    try:
+        usuario = Usuario.objects.get(id_usuario=usuario_id)
+    except Usuario.DoesNotExist:
+        print(f"DEBUG: Usuario con id {usuario_id} no encontrado")
+        usuario = None
+
+    # Agregar la url de ventas al contexto
+    ventas_url = reverse('ventas')
+
     context = {
-        'usuario_id': usuario_id,
-        'rol': rol,
         'usuario': usuario,
+        'rol': rol,
+        'ventas_url': ventas_url,   # <--- aquí lo agregas
     }
     return render(request, 'usuarios/usuario.html', context)
+
+
+
+
 
 def usuario_view(request):
     usuario_id = request.session.get('usuario_id')
@@ -214,3 +229,7 @@ def editar_usuario_ad_view(request, id_usuario_ad):
 def usuarios_ad_view(request):
     usuarios = Usuario.objects.select_related('datos_ad', 'id_area').all()
     return render(request, 'usuarios/usuarios_ad.html', {'usuarios': usuarios})
+
+
+def ventas_view(request):
+    return render(request, 'usuarios/ventas.html')

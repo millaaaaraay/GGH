@@ -11,4 +11,5 @@ urlpatterns = [
     
     # Agrega esta ruta para Usuarios AD
     path('usuarios-ad/', views.usuarios_ad_view, name='usuarios_ad'),
+    path('ventas/', views.ventas_view, name='ventas'),
 ]

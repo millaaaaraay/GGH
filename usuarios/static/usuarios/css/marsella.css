@@ -212,11 +212,12 @@ button.btn-primary:hover {
   width: 100%;
 }
 
-.navbar-brand {
-  color: #ffd633 !important;
-  font-weight: 700;
-  font-size: 1.5rem;
+.navbar-brand img {
+  height: 80px;       /* O el tamaño que tú quieras */
+  width: auto;
+  transition: transform 0.2s ease;
 }
+
 
 .navbar-nav .nav-link {
   color: #ecf0f1 !important;
