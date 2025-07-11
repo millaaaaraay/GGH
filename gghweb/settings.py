@@ -1,10 +1,13 @@
 from pathlib import Path
+import dj_database_url
+import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-dm%$(n(*z7044i68z1d_*n(o$(%)zk@kfkv$tm5fxv4en6iqlf'
-DEBUG = True
-ALLOWED_HOSTS = []
+# Claves para producción, mejor usar variables de entorno en Render
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-dm%$(n(*z7044i68z1d_*n(o$(%)zk@kfkv$tm5fxv4en6iqlf')
+DEBUG = os.environ.get('DEBUG', '') != 'False'
+ALLOWED_HOSTS = ['*']  # Cambia en producción si tienes dominio propio
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -13,7 +16,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'usuarios',
+    'usuarios',  # Tu app personalizada
 ]
 
 MIDDLEWARE = [
@@ -30,72 +33,52 @@ ROOT_URLCONF = 'gghweb.urls'
 
 WSGI_APPLICATION = 'gghweb.wsgi.application'
 
+# Configuración de base de datos para Render/PostgreSQL
 DATABASES = {
-    'default': {
-        'ENGINE': 'mssql',
-        'NAME': 'GGH',
-        'HOST': r'(localdb)\Millaray',
-        'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server',
-            'trusted_connection': 'yes',
-        },
-    }
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL', 'sqlite:///db.sqlite3')
+    )
 }
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],  # Puedes agregar aquí carpetas con templates personalizados
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
-                'django.template.context_processors.request',  # Necesario para admin y mensajes
+                'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                 'usuarios.context_processors.redes_sociales',
-
+                'usuarios.context_processors.redes_sociales',
             ],
         },
     },
 ]
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+LANGUAGE_CODE = 'es-cl'  # O 'en-us' según prefieras
+TIME_ZONE = 'America/Santiago'  # Cambia a tu zona si es necesario
 USE_I18N = True
 USE_TZ = True
 
-# Configuración de archivos estáticos
 STATIC_URL = '/static/'
-
-# Carpeta donde se recogerán los archivos estáticos en producción
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-
-# Carpeta(s) adicionales para archivos estáticos (en desarrollo, para que Django los encuentre)
 STATICFILES_DIRS = [
     BASE_DIR / 'usuarios' / 'static',
 ]
 
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-
+# Configuración de email (solo para pruebas, cambia en producción)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+# Puedes agregar otras configuraciones extra según tu proyecto
 
