@@ -1,0 +1,372 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Solicitud de Códigos - Ferretería Marsella</title>
+  <link rel="stylesheet" href="{% static 'usuarios/css/marsella.css' %}" />
+  <link rel="stylesheet" href="{% static 'usuarios/css/administrador.css' %}" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<style>
+  .solicitud-card {
+    max-width: 920px;
+    margin: 40px auto 60px auto;
+    border-radius: 2rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    background: #fff;
+    animation: fadeIn 1s;
+    padding: 2.5rem 2rem 2rem 2rem;
+  }
+  .form-label { font-weight: 600; color: #1a3259; }
+  .section-title {
+    color: #295078;
+    font-size: 2rem;
+    margin-bottom: 1.7rem;
+    font-weight: 700;
+    letter-spacing: -1px;
+    text-align: center;
+  }
+  .btn-marsella {
+    background: #295078;
+    color: #fff;
+    border-radius: 1.5rem;
+    padding: 0.65rem 2.5rem;
+    font-weight: bold;
+    font-size: 1.15rem;
+    transition: background 0.2s;
+    box-shadow: 0 4px 16px 0 rgba(41, 80, 120, 0.1);
+  }
+  .btn-marsella:hover, .btn-marsella:focus { background: #14365c; color: #fff; }
+  .form-group { margin-bottom: 1.2rem; }
+  .input-group-text { background: #eceff4; }
+  .form-control:focus {
+    border-color: #295078;
+    box-shadow: 0 0 0 0.15rem #29507825;
+  }
+  @media (max-width: 768px) {
+    .solicitud-card { padding: 1rem 0.5rem;}
+    .section-title { font-size: 1.25rem; }
+  }
+</style>
+
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="{% url 'login' %}">
+        <img src="{% static 'usuarios/img/logomarsella.png' %}" alt="Marsella Logo" height="85" loading="lazy" />
+      </a>
+    </div>
+  </nav>
+
+  <main class="flex-grow-1">
+    <div class="solicitud-card">
+      <div class="section-title mb-4">Solicitud de Códigos</div>
+      {% if error_msg %}
+        <div class="alert alert-danger">{{ error_msg }}</div>
+      {% endif %}
+      <form method="POST" enctype="multipart/form-data" autocomplete="off" id="formSolicitud">
+        {% csrf_token %}
+        <div class="row">
+          <!-- Columna izquierda -->
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="fecha" class="form-label">Fecha:</label>
+              <input type="date" class="form-control" id="fecha" name="fecha" required>
+            </div>
+            <div class="form-group">
+              <label for="nombre" class="form-label">Nombre:</label>
+              <select class="form-control" id="nombre" name="nombre" required>
+                <option value="">Seleccione un vendedor</option>
+                {% for usuario in usuarios_vendedores %}
+                  <option value="{{ usuario.id_usuario }}">{{ usuario.nombre }} {{ usuario.apellido }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="id_empresa" class="form-label">Empresa:</label>
+              <select class="form-control" id="id_empresa" name="id_empresa" required>
+                <option value="">Seleccione una empresa</option>
+                {% for empresa in empresas %}
+                  <option value="{{ empresa.id_empresa }}">{{ empresa.nombre_empresa }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="origen_producto" class="form-label">Origen del Producto:</label>
+              <select class="form-control" id="origen_producto" name="origen_producto" required>
+                <option value="">Seleccione origen</option>
+                {% for origen in origenes_productos %}
+                  <option value="{{ origen.id_origen }}">{{ origen.nombre_origen }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="tipo_solicitud" class="form-label">Tipo de Solicitud:</label>
+              <select class="form-control" id="tipo_solicitud" name="tipo_solicitud" required>
+                <option value="">Seleccione tipo de solicitud</option>
+                {% for tipo in tipos_solicitud %}
+                  <option value="{{ tipo.id_tipo_solicitud }}">{{ tipo.nombre_tipo_solicitud }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group mb-3">
+              <label for="origen" class="form-label">Cotización:</label>
+              <div class="input-group">
+                <select class="form-select" id="origen" name="origen" required>
+                  <option value="">Seleccione tipo de cotización</option>
+                  {% for origen in origenes %}
+                    <option value="{{ origen.id_origen }}">{{ origen.origen_cotizacion }}</option>
+                  {% endfor %}
+                </select>
+                <button type="button" id="btnAdjuntarArchivo" class="btn btn-outline-secondary d-none" title="Adjuntar archivos">
+                  <i class="fas fa-paperclip"></i>
+                </button>
+                <input type="file" id="inputAdjunto" name="archivos_cotizacion" class="d-none"
+                       accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" multiple>
+              </div>
+              <div id="archivoAdjuntoNombre" class="form-text text-primary"></div>
+              <div id="errorAdjunto" class="form-text text-danger"></div>
+            </div>
+          </div>
+          <!-- Columna derecha -->
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="n_proveedor" class="form-label">Número de Proveedor:</label>
+              <select class="form-control" id="n_proveedor" name="n_proveedor">
+                <option value="">Seleccione número de proveedor</option>
+                {% for proveedor in proveedores_combo %}
+                  <option value="{{ proveedor.id }}">{{ proveedor.nombre }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="rut_proveedor" class="form-label">RUT Proveedor:</label>
+              <input type="text" class="form-control" id="rut_proveedor" name="rut_proveedor" readonly>
+            </div>
+            <div class="form-group">
+              <label for="sku_proveedor" class="form-label">SKU Proveedor:</label>
+              <input type="text" class="form-control" id="sku_proveedor" name="sku_proveedor" maxlength="100">
+            </div>
+            <div class="form-group">
+              <label for="sku_fab_modelo" class="form-label">SKU Fabricante/Modelo:</label>
+              <input type="text" class="form-control" id="sku_fab_modelo" name="sku_fab_modelo" maxlength="100">
+            </div>
+            <div class="form-group">
+              <label for="descriptor" class="form-label">Descriptor:</label>
+              <input type="text" class="form-control" id="descriptor" name="descriptor" maxlength="100">
+            </div>
+            <div class="form-group">
+              <label for="marca" class="form-label">Marca:</label>
+              <input type="text" class="form-control" id="marca" name="marca" maxlength="100">
+            </div>
+            <div class="form-group">
+              <label for="udm" class="form-label">Unidad de Medida:</label>
+              <select class="form-control" id="udm" name="udm" required>
+                <option value="">Seleccione UDM</option>
+                {% for udm in udms %}
+                  <option value="{{ udm.id_udm }}">{{ udm.nombre_udm }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+        </div>
+        <!-- Dimensiones y peso -->
+        <div class="row mt-4">
+          <div class="col-md-3">
+            <div class="form-group mb-3">
+              <label for="largo_valor" class="form-label">Largo:</label>
+              <div class="input-group">
+                <input type="number" min="0" step="0.001" class="form-control" id="largo_valor" name="largo_valor" placeholder="Ingrese largo">
+                <select class="form-select" id="largo_unidad" name="largo_unidad" style="max-width:80px">
+                  <option value="mm">MM</option>
+                  <option value="cm">CM</option>
+                  <option value="mt">MT</option>
+                </select>
+                <span class="input-group-text" id="largo_icono">
+                  <i class="fas fa-times-circle text-danger"></i>
+                </span>
+              </div>
+              <small class="form-text text-muted"><span id="largo_convertido"></span></small>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group mb-3">
+              <label for="ancho_valor" class="form-label">Ancho:</label>
+              <div class="input-group">
+                <input type="number" min="0" step="0.001" class="form-control" id="ancho_valor" name="ancho_valor" placeholder="Ingrese ancho">
+                <select class="form-select" id="ancho_unidad" name="ancho_unidad" style="max-width:80px">
+                  <option value="mm">MM</option>
+                  <option value="cm">CM</option>
+                  <option value="mt">MT</option>
+                </select>
+                <span class="input-group-text" id="ancho_icono">
+                  <i class="fas fa-times-circle text-danger"></i>
+                </span>
+              </div>
+              <small class="form-text text-muted"><span id="ancho_convertido"></span></small>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group mb-3">
+              <label for="alto_valor" class="form-label">Alto:</label>
+              <div class="input-group">
+                <input type="number" min="0" step="0.001" class="form-control" id="alto_valor" name="alto_valor" placeholder="Ingrese alto">
+                <select class="form-select" id="alto_unidad" name="alto_unidad" style="max-width:80px">
+                  <option value="mm">MM</option>
+                  <option value="cm">CM</option>
+                  <option value="mt">MT</option>
+                </select>
+                <span class="input-group-text" id="alto_icono">
+                  <i class="fas fa-times-circle text-danger"></i>
+                </span>
+              </div>
+              <small class="form-text text-muted"><span id="alto_convertido"></span></small>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group mb-3">
+              <label for="peso_valor" class="form-label">Peso:</label>
+              <div class="input-group">
+                <input type="number" min="0" step="0.001" class="form-control" id="peso_valor" name="peso_valor" placeholder="Ingrese peso">
+                <select class="form-select" id="peso_unidad" name="peso_unidad" style="max-width:80px">
+                  <option value="gr">GR</option>
+                  <option value="kg">KG</option>
+                  <option value="ton">TON</option>
+                </select>
+                <span class="input-group-text" id="peso_icono">
+                  <i class="fas fa-times-circle text-danger"></i>
+                </span>
+              </div>
+              <small class="form-text text-muted"><span id="peso_convertido"></span></small>
+            </div>
+          </div>
+        </div>
+        <div class="text-center mt-4">
+          <button type="submit" class="btn btn-marsella">
+            <i class="fas fa-paper-plane me-2"></i>Enviar Solicitud
+          </button>
+        </div>
+      </form>
+    </div>
+  </main>
+  {% include 'usuarios/footer.html' %}
+
+  <!-- Serializa el combo proveedor+rut para JS -->
+  <script id="proveedores-json" type="application/json">{{ proveedores_combo_json }}</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // --- Proveedor/RUT automático ---
+    const proveedoresCombo = JSON.parse(document.getElementById('proveedores-json').textContent);
+    document.getElementById('n_proveedor').addEventListener('change', function() {
+      const rutInput = document.getElementById('rut_proveedor');
+      const seleccionado = this.value;
+      const found = proveedoresCombo.find(item => item.id == seleccionado);
+      rutInput.value = found ? found.rut : '';
+    });
+
+    // Adjuntos y validaciones
+    document.getElementById('origen').addEventListener('change', function() {
+      const btnAdjuntar = document.getElementById('btnAdjuntarArchivo');
+      const inputAdjunto = document.getElementById('inputAdjunto');
+      const archivoNombre = document.getElementById('archivoAdjuntoNombre');
+      const errorAdjunto = document.getElementById('errorAdjunto');
+      let texto = this.options[this.selectedIndex].text.trim().toUpperCase();
+      if (texto === 'POR DOCUMENTO' || texto === 'WHATSAPP') {
+        btnAdjuntar.classList.remove('d-none');
+      } else {
+        btnAdjuntar.classList.add('d-none');
+        archivoNombre.textContent = '';
+        inputAdjunto.value = '';
+        errorAdjunto.textContent = '';
+      }
+    });
+    document.getElementById('btnAdjuntarArchivo').addEventListener('click', function() {
+      document.getElementById('inputAdjunto').click();
+    });
+    document.getElementById('inputAdjunto').addEventListener('change', function() {
+      const archivoNombre = document.getElementById('archivoAdjuntoNombre');
+      let nombres = [];
+      if (this.files && this.files.length > 0) {
+        for (let i = 0; i < this.files.length; i++) {
+          nombres.push(this.files[i].name);
+        }
+        archivoNombre.textContent = 'Archivos: ' + nombres.join(', ');
+      } else {
+        archivoNombre.textContent = '';
+      }
+    });
+
+    document.getElementById('formSolicitud').addEventListener('submit', function(event) {
+      const origen = document.getElementById('origen');
+      const inputAdjunto = document.getElementById('inputAdjunto');
+      const errorAdjunto = document.getElementById('errorAdjunto');
+      let texto = origen.options[origen.selectedIndex].text.trim().toUpperCase();
+      errorAdjunto.textContent = '';
+      if ((texto === 'POR DOCUMENTO' || texto === 'WHATSAPP')) {
+        if (!inputAdjunto.files || inputAdjunto.files.length === 0) {
+          errorAdjunto.textContent = 'Debe adjuntar al menos 1 archivo.';
+          event.preventDefault();
+        } else if (inputAdjunto.files.length > 4) {
+          errorAdjunto.textContent = 'Puede adjuntar un máximo de 4 archivos.';
+          event.preventDefault();
+        }
+      }
+    });
+
+    // Validación visual de dimensiones
+    function convertir(valor, unidad, tipo) {
+      if (!valor || isNaN(valor)) return 0;
+      valor = parseFloat(valor);
+      if (tipo === 'dim') {
+        switch (unidad) {
+          case "mm": return valor;
+          case "cm": return valor * 10;
+          case "mt": return valor * 1000;
+          default:   return valor;
+        }
+      } else if (tipo === 'peso') {
+        switch (unidad) {
+          case "gr": return valor;
+          case "kg": return valor * 1000;
+          case "ton": return valor * 1000000;
+          default:   return valor;
+        }
+      }
+    }
+    function validarCampo(inputId, unidadId, convertidoId, iconoId, tipo) {
+      const valor = document.getElementById(inputId).value;
+      const unidad = document.getElementById(unidadId).value;
+      const mm_gr = convertir(valor, unidad, tipo);
+      const convertidoSpan = document.getElementById(convertidoId);
+      const iconoSpan = document.getElementById(iconoId);
+      let unidadMostrar = unidad.toUpperCase();
+      let unidadFinal = tipo === 'peso' ? 'gramos' : 'milímetros';
+      if (valor && mm_gr > 0) {
+        convertidoSpan.textContent = valor + " " + unidadMostrar + " = " + mm_gr + " " + unidadFinal;
+        iconoSpan.innerHTML = '<i class="fas fa-check-circle text-success"></i>';
+      } else {
+        convertidoSpan.textContent = "";
+        iconoSpan.innerHTML = '<i class="fas fa-times-circle text-danger"></i>';
+      }
+    }
+    document.getElementById('largo_valor').addEventListener('input', ()=>validarCampo('largo_valor','largo_unidad','largo_convertido','largo_icono','dim'));
+    document.getElementById('largo_unidad').addEventListener('change', ()=>validarCampo('largo_valor','largo_unidad','largo_convertido','largo_icono','dim'));
+    document.getElementById('ancho_valor').addEventListener('input', ()=>validarCampo('ancho_valor','ancho_unidad','ancho_convertido','ancho_icono','dim'));
+    document.getElementById('ancho_unidad').addEventListener('change', ()=>validarCampo('ancho_valor','ancho_unidad','ancho_convertido','ancho_icono','dim'));
+    document.getElementById('alto_valor').addEventListener('input', ()=>validarCampo('alto_valor','alto_unidad','alto_convertido','alto_icono','dim'));
+    document.getElementById('alto_unidad').addEventListener('change', ()=>validarCampo('alto_valor','alto_unidad','alto_convertido','alto_icono','dim'));
+    document.getElementById('peso_valor').addEventListener('input', ()=>validarCampo('peso_valor','peso_unidad','peso_convertido','peso_icono','peso'));
+    document.getElementById('peso_unidad').addEventListener('change', ()=>validarCampo('peso_valor','peso_unidad','peso_convertido','peso_icono','peso'));
+    // Inicializar
+    validarCampo('largo_valor','largo_unidad','largo_convertido','largo_icono','dim');
+    validarCampo('ancho_valor','ancho_unidad','ancho_convertido','ancho_icono','dim');
+    validarCampo('alto_valor','alto_unidad','alto_convertido','alto_icono','dim');
+    validarCampo('peso_valor','peso_unidad','peso_convertido','peso_icono','peso');
+  </script>
+</body>
+</html>

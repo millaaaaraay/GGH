@@ -37,7 +37,7 @@
 </head>
 <body class="d-flex flex-column min-vh-100">
     <!-- Botón Volver -->
-    <a href="{% url 'administrador' %}" class="back-button text-decoration-none">
+    <a href="{% url 'usuario' %}" class="back-button text-decoration-none">
         <i class="fas fa-arrow-left me-2"></i>Volver al Panel
     </a>
 
@@ -79,7 +79,7 @@
                         <i class="fas fa-barcode fa-2x module-icon mb-3"></i>
                         <h5 class="card-title">Creación de Código</h5>
                         <p class="card-text">Rellenar plantilla</p>
-                        <a href="#" class="btn btn-primary">Ir</a>
+                        <a href="{% url 'creacioncodigo' %}" class="btn btn-primary">Ir</a>
                     </div>
                 </div>
             </div>
